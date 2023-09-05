@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class LappingStopWatchTest {
 
-	public static final int WAITING_TIME_MS = 5;
+	public static final int WAITING_TIME_MS = 1;
 
 	@Test
 	void finalTime_availableAfterStop() throws InterruptedException {
@@ -22,6 +22,7 @@ class LappingStopWatchTest {
 
 		// Then
 		var finalTime = watch.getFinal();
+		printNanos("finalTime", finalTime);
 		assertTrue(finalTime.compareTo(Duration.ofMillis(WAITING_TIME_MS)) >= 0,
 				"finalTime should not be smaller than waitingTime");
 	}
@@ -43,6 +44,7 @@ class LappingStopWatchTest {
 		// When
 		Thread.sleep(WAITING_TIME_MS);
 		var finalTime = watch.getFinal(true);
+		printNanos("finalTime", finalTime);
 
 		// Then
 		assertTrue(finalTime.compareTo(Duration.ofMillis(WAITING_TIME_MS)) >= 0,
@@ -60,6 +62,8 @@ class LappingStopWatchTest {
 		var current2 = watch.getCurrent();
 
 		// Then
+		printNanos("current1", current1);
+		printNanos("current2", current2);
 		assertFalse(current1.compareTo(current2) >= 0,
 				"current1 should be smaller than current 2");
 	}
@@ -76,6 +80,7 @@ class LappingStopWatchTest {
 
 		// Then
 		var lapTime = watch.getLap(lapName);
+		printNanos("lapTime", lapTime);
 		assertTrue(lapTime.compareTo(Duration.ofMillis(WAITING_TIME_MS)) >= 0,
 				"lapTime should not be smaller than waitingTime");
 	}
@@ -104,6 +109,8 @@ class LappingStopWatchTest {
 		// Then
 		var lapTime1 = watch.getLap(lapName, 0);
 		var lapTime2 = watch.getLap(lapName, 1);
+		printNanos("lapTime1", lapTime1);
+		printNanos("lapTime2", lapTime2);
 		assertTrue(lapTime1.compareTo(Duration.ofMillis(WAITING_TIME_MS)) >= 0,
 				"lapTime1 should not be smaller than waitingTime");
 		assertTrue(lapTime2.compareTo(Duration.ofMillis(WAITING_TIME_MS)) >= 0,
@@ -137,6 +144,8 @@ class LappingStopWatchTest {
 		// Then
 		var lapTime1 = watch.getLap(lapName, 0);
 		var lapTime2 = watch.getLap(lapName, 1);
+		printNanos("lapTime1", lapTime1);
+		printNanos("lapTime2", lapTime2);
 		assertTrue(lapTime1.compareTo(Duration.ofMillis(WAITING_TIME_MS)) >= 0,
 				"lapTime1 should not be smaller than waitingTime");
 		assertTrue(lapTime2.compareTo(lapTime1) >= 0,
@@ -160,6 +169,9 @@ class LappingStopWatchTest {
 		// Then
 		var lapTime1 = watch.getLap(lapName1);
 		var lapTime2 = watch.getLap(lapName2);
+		printNanos("difference", difference);
+		printNanos("lapTime1", lapTime1);
+		printNanos("lapTime2", lapTime2);
 		assertTrue(lapTime1.compareTo(difference) >= 0,
 				"lapTime1 should not be smaller than duration between lapTime1 and lapTime2");
 		assertTrue(lapTime2.compareTo(difference) >= 0,
@@ -182,10 +194,17 @@ class LappingStopWatchTest {
 		var differenceUnordered = watch.getDifference(lapName2, lapName1);
 
 		// Then
+		printNanos("differenceOrdered", differenceOrdered);
+		printNanos("differenceUnordered", differenceUnordered);
 		assertEquals(differenceOrdered, differenceUnordered);
 	}
 
 	private String randomString() {
 		return UUID.randomUUID().toString();
+	}
+
+	private void printNanos(String info, Duration finalTime) {
+		var nanos = finalTime.toNanos();
+		System.out.printf("%s: %sms%n", info, String.format("%,f", nanos/1_000_000f));
 	}
 }
